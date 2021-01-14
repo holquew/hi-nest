@@ -7,9 +7,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { Movie } from './entities/movie.entitiy';
 import { MoviesService } from './movies.service';
 
 // 컨트롤러의 이름이 있을 때 특별 취급
@@ -19,7 +22,7 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Get()
-  getAll() {
+  getAll(): Movie[] {
     return this.moviesService.getAll();
   }
 
@@ -32,7 +35,7 @@ export class MoviesController {
   // 파라미터가 필요하다면 꼭 요청해서 사용해야한다
   // decorator @Param, @Body 활용
   @Get(':id')
-  getOne(@Param('id') moiveId: number) {
+  getOne(@Param('id') moiveId: number): Movie {
     return this.moviesService.getOne(moiveId);
   }
 
