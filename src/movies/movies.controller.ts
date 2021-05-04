@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { Movie } from './entities/movie.entitiy';
+import { Movie } from './entities/movie.entity';
 import { MoviesService } from './movies.service';
 
 // 컨트롤러의 이름이 있을 때 특별 취급
