@@ -1,4 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateEpisodeDto } from 'src/episode/dto/create-episode.dto';
+import { UpdateEpisodeDto } from 'src/episode/dto/update-episode.dto';
+import { Episode } from 'src/episode/entities/episode.entity';
 import { fakeDB } from './db/db';
 import { CreatePodcastDto } from './dto/create-podcast.dto';
 import { UpdatePodcastDto } from './dto/update-podcast.dto';
@@ -40,5 +43,57 @@ export class PodcastsService {
     const podcast = this.getOne(id);
     this.deleteOne(id);
     this.podcasts.push({ ...podcast, ...updateData });
+  }
+
+  getEpisodes(podcastId: number): Episode[] {
+    const podcast = this.getOne(podcastId);
+    return podcast.episodes;
+  }
+
+  addEpisode(podcastId: number, createData: CreateEpisodeDto) {
+    const episodes = this.getEpisodes(podcastId);
+
+    episodes.push({
+      id: episodes.length + 1,
+      ...createData,
+    });
+  }
+
+  getOneEpisode(podcastId: number, episodeId: number): Episode {
+    const episode = this.getEpisodes(podcastId).find(
+      (episode) => episodeId === episode.id,
+    );
+    if (!episode) {
+      throw new NotFoundException(
+        `Episode with ID ${episodeId} not found. Please try again.`,
+      );
+    }
+    return episode;
+  }
+
+  updateEpisode(
+    podcastId: number,
+    episodeId: number,
+    updateData: UpdateEpisodeDto,
+  ) {
+    const podcast = this.getOne(podcastId);
+
+    let episodes = this.getEpisodes(podcastId);
+    const targetEpisode = this.getOneEpisode(podcastId, episodeId);
+
+    episodes = episodes.filter((episode) => episodeId !== episode.id);
+    episodes.push({
+      ...targetEpisode,
+      ...updateData,
+    });
+
+    podcast.episodes = episodes;
+  }
+
+  deleteEpisode(podcastId: number, episodeId: number) {
+    const podcast = this.getOne(podcastId);
+    let episodes = this.getEpisodes(podcastId);
+    episodes = episodes.filter((episode) => episodeId !== episode.id);
+    podcast.episodes = episodes;
   }
 }
